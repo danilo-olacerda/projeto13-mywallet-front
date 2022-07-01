@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import { ThreeDots } from  'react-loader-spinner';
+import axios from "axios";
 
 export default function Register() {
 
@@ -15,20 +16,31 @@ export default function Register() {
 
     function register(e) {
 
+        setLoading(true);
+
         e.preventDefault();
         if (password!==confirmPassword) {
             alert("As senhas não conferem!");
+            setLoading(false);
             return;
         }
-        const newUser = {
+        const body = {
             name,
             email,
             password,
             confirmPassword
         };
-        console.log(newUser);
-        setLoading(true);
 
+        const promise = axios.post("http://localhost:5000/register", body);
+
+        promise.then(()=> {
+          alert("Cadastrado com sucesso!")
+          setLoading(false);
+          navigate("/");
+        }).catch((info)=>{
+          alert(info.response.data);
+          setLoading(false);
+        })
     }
 
     return (
