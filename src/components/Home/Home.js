@@ -24,7 +24,7 @@ export default function Home() {
                 "Authorization": `Bearer ${token}`
             }
         }
-        const promise = axios.get("http://localhost:5000/userinout", config)
+        const promise = axios.get("https://mywallet-back-danilo.herokuapp.com/userinout", config)
         promise.then((res)=>{
             setName(res.data.name);
             setRegisters(res.data.posts);

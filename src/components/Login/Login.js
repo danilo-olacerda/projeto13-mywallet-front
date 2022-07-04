@@ -23,7 +23,7 @@ export default function Login() {
       password
     };
     
-    const promise = axios.post("http://localhost:5000/login", body);
+    const promise = axios.post("https://mywallet-back-danilo.herokuapp.com/login", body);
     promise.then((res)=>{
         setToken(res.data);
         navigate("/home");

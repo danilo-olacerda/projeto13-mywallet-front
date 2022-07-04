@@ -26,7 +26,7 @@ export default function Out(){
             }
         }
 
-        await axios.post("http://localhost:5000/newinout", body, config);
+        await axios.post("https://mywallet-back-danilo.herokuapp.com/newinout", body, config);
         navigate("/home");
     }
 

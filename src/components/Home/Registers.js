@@ -18,7 +18,7 @@ export default function Registers({in_out, description, day, value, id, setUpdat
             }
         }
 
-        await axios.delete(`http://localhost:5000/deleteinout/${id}`, config);
+        await axios.delete(`https://mywallet-back-danilo.herokuapp.com/deleteinout/${id}`, config);
 
         setUpdate(Math.random())
     }

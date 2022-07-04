@@ -31,7 +31,7 @@ export default function Register() {
             confirmPassword
         };
 
-        const promise = axios.post("http://localhost:5000/register", body);
+        const promise = axios.post("https://mywallet-back-danilo.herokuapp.com/register", body);
 
         promise.then(()=> {
           alert("Cadastrado com sucesso!")
