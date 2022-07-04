@@ -1,21 +1,38 @@
-import styled from "styled-components"
+import axios from "axios";
+import styled from "styled-components";
+import {useContext} from "react";
+import UserContext from "../../contexts/UserContext.js";
 
-export default function Registers({in_out}) {
+export default function Registers({in_out, description, day, value, id, setUpdate}) {
 
-    function deleteRegister(){
+    const { token } = useContext(UserContext);
+
+    async function deleteRegister(){
         const confirmDelete = window.confirm("Deseja apagar o registo ?");
+        if (!confirmDelete)
+        return;
+
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+
+        await axios.delete(`http://localhost:5000/deleteinout/${id}`, config);
+
+        setUpdate(Math.random())
     }
 
 
     return (
         <Container>
             <div>
-                <h3>30/11</h3>
-                <h4>Almoço mãe</h4>
+                <h3>{day}</h3>
+                <h4>{description}</h4>
             </div>
 
             <Value in_out={in_out}>
-                <h3>39,90</h3>
+                <h3>{value.replace(".",",")}</h3>
                 <h4 onClick={deleteRegister}>x</h4>
             </Value>
         </Container>

@@ -1,25 +1,40 @@
 import styled from "styled-components";
 import { useState } from "react";
+import {useContext} from "react";
+import UserContext from "../../contexts/UserContext.js";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Out(){
 
     const [value, setValue] = useState("");
     const [description, setDescription] = useState("");
-
-    function addOut(e){
+    const { token } = useContext(UserContext);
+    const navigate = useNavigate();
+    
+    async function addOut(e){
         e.preventDefault();
-        const newOut = {
+        const body = {
             value,
-            description
+            description,
+            in_out: false
         }
-        console.log(newOut);
+
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+
+        await axios.post("http://localhost:5000/newinout", body, config);
+        navigate("/home");
     }
 
     return (
         <Container>
             <Text>Nova saída</Text>
             <form action="submit" onSubmit={addOut}>
-                <input type="number" placeholder="Valor" required value={value} onChange={(e) => setValue(e.target.value)}/>
+                <input type="number" placeholder="Valor" min="0.01" step="0.01" required value={value} onChange={(e) => setValue(e.target.value)}/>
                 <input type="text" placeholder="Descrição" required value={description} onChange={(e) => setDescription(e.target.value)}/>
                 <button type="submit">
                     <h3>Salvar saída</h3>

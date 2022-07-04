@@ -3,6 +3,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import { ThreeDots } from  'react-loader-spinner';
+import axios from "axios";
+import {useContext} from "react";
+import UserContext from "../../contexts/UserContext.js";
 
 export default function Login() {
 
@@ -10,17 +13,26 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  //navigate("/home")
+  const {setToken} = useContext(UserContext);
 
   function send(e) {
     e.preventDefault();
-    const newUser = {
+    setLoading(true);
+    const body = {
       email,
       password
     };
-    console.log(newUser);
-    setLoading(true);
-    // CHAMAR A ROTA DE LOGIN E REGISTRAR O TOKEN DO USUARIO CASO ESTEJA CERTO, CASO ESTEJA ERRADO RETORNAR O ERRO
+    
+    const promise = axios.post("http://localhost:5000/login", body);
+    promise.then((res)=>{
+        setToken(res.data);
+        navigate("/home");
+        setLoading(false);
+      })
+      .catch((res)=>{
+        alert(res.response.data);
+        setLoading(false);
+      });
   }
 
   return (

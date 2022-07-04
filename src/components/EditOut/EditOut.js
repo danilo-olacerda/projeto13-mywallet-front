@@ -1,10 +1,13 @@
 import styled from "styled-components";
 import { useState } from "react";
+import {useContext} from "react";
+import UserContext from "../../contexts/UserContext.js";
 
 export default function EditOut(){
 
     const [value, setValue] = useState("");
     const [description, setDescription] = useState("");
+    const { token } = useContext(UserContext);
 
     function addOut(e){
         e.preventDefault();

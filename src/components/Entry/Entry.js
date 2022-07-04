@@ -1,25 +1,40 @@
 import styled from "styled-components";
 import { useState } from "react";
+import {useContext} from "react";
+import UserContext from "../../contexts/UserContext.js";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Entry(){
 
     const [value, setValue] = useState("");
     const [description, setDescription] = useState("");
+    const { token } = useContext(UserContext);
+    const navigate = useNavigate();
 
-    function addEntry(e){
+    async function addEntry(e){
         e.preventDefault();
-        const newEntry = {
+        const body = {
             value,
-            description
+            description,
+            in_out: true
         }
-        console.log(newEntry);
+
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+
+        await axios.post("http://localhost:5000/newinout", body, config);
+        navigate("/home");
     }
 
     return (
         <Container>
             <Text>Nova entrada</Text>
             <form action="submit" onSubmit={addEntry}>
-                <input type="number" placeholder="Valor" required value={value} onChange={(e) => setValue(e.target.value)}/>
+                <input type="number" placeholder="Valor" min="0.01" step="0.01" required value={value} onChange={(e) => setValue(e.target.value)}/>
                 <input type="text" placeholder="Descrição" required value={description} onChange={(e) => setDescription(e.target.value)}/>
                 <button type="submit">
                     <h3>Salvar entrada</h3>

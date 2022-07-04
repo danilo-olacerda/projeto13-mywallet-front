@@ -5,27 +5,61 @@ import delete_icon from "../../assets/delete-icon.png";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Registers from "./Registers.js";
+import {useContext} from "react";
+import UserContext from "../../contexts/UserContext.js";
+import axios from "axios";
 
 export default function Home() {
 
     const [registers, setRegisters] = useState([]);
+    const [total, setTotal] = useState("0");
+    const [name, setName] = useState("");
+    const [update, setUpdate] = useState(0);
     const navigate = useNavigate();
+    const { token, setToken } = useContext(UserContext);
+
+    useEffect(()=>{
+        const config = {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+        const promise = axios.get("http://localhost:5000/userinout", config)
+        promise.then((res)=>{
+            setName(res.data.name);
+            setRegisters(res.data.posts);
+            setTotal(res.data.total);
+        })
+        .catch((res)=>{
+            alert(res.response.data);
+            navigate("/");
+        })
+    }, [update]);
 
     function toPage(page){
-        //navigate(page);
+        navigate(page);
+    }
+
+    function exit(){
+        const quit = window.confirm("Deseja realmente sair ?");
+        if(!quit)
+        return;
+        setToken(null);
+        navigate("/");
     }
 
     return (
         <Container>
             <Name>
-                <h3>Olá, Fulano</h3>
-                <img src={exit_logo} alt="" />
+                <h3>Olá, {name}</h3>
+                <img src={exit_logo} alt="" onClick={exit}/>
             </Name>
             <Register registers={registers}>
-                {registers.length===0 ? <p>Não há registros de entrada ou saída</p> : registers.map((data, i)=> <Registers key={i} in_out={data.in_out}/>)}
+                {registers.length===0 ? <p>Não há registros de entrada ou saída</p> : registers.map((data, i)=> <Registers setUpdate={setUpdate} key={i} id={data._id} in_out={data.in_out} description={data.description} value={data.value} day={data.day}/>)}
+                <BalanceSpace></BalanceSpace>
                 <Balance registers={registers}>
                     <p>SALDO</p>
-                    <h5>255,55</h5>
+                    <Value total={total}>{total.replace("-","")}</Value>
                 </Balance>
             </Register>
             <Buttons>
@@ -72,6 +106,8 @@ const Name = styled.div`
 const Register = styled.div`
     position: relative;
     min-height: 446px;
+    max-height: 446px;
+    overflow-y: scroll;
     width: calc(100% - 50px);
     background: #FFFFFF;
     border-radius: 5px;
@@ -92,6 +128,9 @@ const Register = styled.div`
         line-height: 23px;
         text-align: center;
         color: #868686;
+    }
+    ::-webkit-scrollbar {
+        display: none;
     }
 `;
 const Buttons = styled.div`
@@ -140,10 +179,10 @@ const DeleteButton = styled.div`
 const Balance=styled.div`
     display: ${props => props.registers.length===0 ? "none" : "flex"};
     justify-content: space-between;
-    width: calc(100% - 22px);
-    position: absolute;
-    bottom: 10px;
-    left: 12px;
+    width: calc(87% - 22px);
+    position: fixed;
+    top: 500px;
+    left: 34px;
     p {
         font-weight: 700;
         font-size: 17px;
@@ -151,11 +190,18 @@ const Balance=styled.div`
         color: #000000;
         width: auto;
     }
-    h5 {
-        font-weight: 400;
-        font-size: 17px;
-        line-height: 20px;
-        text-align: right;
-        color: #03AC00;
-    }
+`;
+const BalanceSpace=styled.div`
+    height: 40px;
+    width: calc(87% - 22px);
+    background-color: #FFFFFF;
+    position: fixed;
+    top: 484px;
+`
+const Value=styled.h5`
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 20px;
+    text-align: right;
+    color: ${props => props.total<0 ? "#C70000" : "#03AC00"};
 `;
